@@ -1,0 +1,132 @@
+/*
+
+WHAT IS OWNERSHIP?
+
+- 'Ownership' is a set of rules that tells Rust how to manage the memory.
+- Ownership rules:
+    -> Each value in Rust has an 'owner'.
+    -> There can only be one owner at a time.
+    -> When the owner goes out of scope, the value will be dropped.
+
+
+THE STACK AND THE HEAP
+
+- Both are used at runtime, but they are structured in different ways
+- The stack utilizes LIFO (last in, first out). It means that the 'stack' works like a pile. The last element that goes in, is the first to go out when necessary. To store a data in the stack, it needs to have a known and fixed size.
+- The heap is different: when a data is stored in the heap, it is requested a certain amount of space. When a empty space is found in the memory that support the size of that data, it is marked as used, and returns a pointer, which is the address of that location.
+
+- Pushing to the stack is faster than allocating on the heap, because the data is always stored in the top of the stack, never having the necessity of searching for an empty space.
+- Accessing data in the heap is slower than accessing data on the stack because you have to follow a pointer to get there.
+
+
+THE STRING TYPE
+
+- Why use 'String' type instead of using string literals?
+    -> String literals are immutable and not every string value can be known when we write our code.
+    -> The 'String' type manages data allocated on the heap and as such is able to store an amount of text that is unknown to us at compile time.
+
+- Creating a String from a string literal using 'from' function:
+    -> For example:
+        
+        let s = String::from("hello");
+
+- It can be mutaded:
+    -> For example:
+
+        let mut s = String::from("hello");
+        s.push_str(", world!"); // push_str() appends a literal to a String
+        println!("{s}");
+    
+
+MEMORY AND ALLOCATION
+
+- For integer values:
+    -> For example:
+
+        let x = 5;
+        let y = x;
+
+        -> In the code above it is happening a copy of values. That means that the value '5' is being copyied into the variable 'y'.
+
+- For 'String' type:
+    -> For example:
+
+        let s1 = String::from("hello");
+        let s2 = s1;
+
+        println!("{s1}, world!");
+
+        -> 's1' it is a variable that has a pointer that points to the space in heap memory where the string 'hello' is allocated.
+        -> 's2' is equal to 's1', that means that 's2' has the same structure as 's1', also having a pointer that points to the SAME space in heap memory that 's1' pointer points to.
+        -> But, int Rust, this isn't called 'shallow copy' as in other programming languages, because it has one difference: once 's2' variable is declared being equal to 's1', the 's1' variable stop working, let's say. This is called 'move', 's1' was 'moved' into 's2'. 
+        -> This functionality solves an issue: the 'double free error', when a program tries to free two variables that are correlated to the same memory. Freeing memory twice can lead to memory corruption, which can potentially lead to security vulnerabilities.
+        -> That way Rust solves that problem.
+
+- It is possible to copy a variable stored in the heap memory to another variable instead doing it the way showed above.
+    -> To do so, it is necessary to use the '.clone()' method:
+        -> For example:
+
+                let s1 = String::from("hello");
+                let s2 = s1.clone();
+
+                println!("s1 = {s1}, s2 = {s2}");
+
+                -> That way 's1' does not goes out of scope, and 's2' pointer points to another space in heap memory that contains the string value, not the same as 's1' pointer.
+
+- This can be done to integers values as well, but it isn't called '.clone()'. It is called the 'Copy trait'.
+
+
+RETURN VALUES AND SCOPE
+
+- Returning values can also transfer ownership:
+    -> For example:
+
+        fn main() {
+            let s1 = gives_ownership();         // gives_ownership moves its return
+                                                // value into s1
+
+            let s2 = String::from("hello");     // s2 comes into scope
+
+            let s3 = takes_and_gives_back(s2);  // s2 is moved into
+                                                // takes_and_gives_back, which also
+                                                // moves its return value into s3
+        } // Here, s3 goes out of scope and is dropped. s2 was moved, so nothing
+        // happens. s1 goes out of scope and is dropped.
+
+        fn gives_ownership() -> String {             // gives_ownership will move its
+                                                    // return value into the function
+                                                    // that calls it
+
+            let some_string = String::from("yours"); // some_string comes into scope
+
+            some_string                              // some_string is returned and
+                                                    // moves out to the calling
+                                                    // function
+        }
+
+        // This function takes a String and returns one
+        fn takes_and_gives_back(a_string: String) -> String { // a_string comes into
+                                                            // scope
+
+            a_string  // a_string is returned and moves out to the calling function
+        }
+
+        -> While this works, taking ownership and then returning ownership with every function is a bit tedious.
+        -> Rust does let us return multiple values using a tuple:
+            -> For example:
+
+                fn main() {
+                    let s1 = String::from("hello");
+
+                    let (s2, len) = calculate_length(s1);
+
+                    println!("The length of '{s2}' is {len}.");
+                }
+
+                fn calculate_length(s: String) -> (String, usize) {
+                    let length = s.len(); // len() returns the length of a String
+
+                    (s, length)
+                }
+
+*/

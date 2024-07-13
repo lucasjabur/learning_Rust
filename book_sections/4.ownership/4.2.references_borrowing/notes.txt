@@ -1,0 +1,115 @@
+/*
+
+REFERENCES AND BORROWING
+
+- Follow the example:
+
+    fn main() {
+        let s1 = String::from("hello"); 
+        let (s2, len) = calculate_length(s1); // need to create another variable ('s2') to store the String, because after calling the 'calculate_length()' function, 's1' would be out of scope.
+        println!("The length of '{}' is {}.", s2, len);
+    }
+
+    fn calculate_length(s: String) -> (String, usize) { // need to return a tuple because 's2' is being used to store the String that is being passed as a parameter to 'calculate_length()' function.
+        let length = s.len(); // len() returns the length of a String
+        (s, length)
+    }
+
+    -> Problem: take in a String to 'calculate_length()' and return the length of the String.
+    -> The solution above isn't the best way of dealing with the problem. It is strange to use a tuple as a return value and not something that you would use normally.
+        -> To manage the problem in a better way, lets make some changes:
+            -> The return value will be just the 'length' variable, that changes the signature of the function as well, from '(String, usize)' to 'usize'.
+            -> Besides that, in 'main()' function, lets change 'let (s2, len) = calculate_length(s1);' to 'let len = calculate_length(s1);', and
+            'println!("The length of '{}' is {}.", s2, len);' to println!("The length of '{}' is {}.", s1, len);'.
+            -> The most importante change is the use of reference:
+                -> 'let (s2, len) = calculate_length(&s1);'
+                -> 'fn calculate_length(s: &String) -> usize {...}'
+
+            -> We don't need to create another variable to store the value of 's1' anymore, just use the reference of it to the other function, that way 's1' can be used on the rest of the 'main()' function, because it would still be in scope / valid, not having the necessity of creating 's2', thus not having to use a tuple as the return value of the 'calculate_length()' function.
+
+            -> Passing in references as functions parameters is called 'BORROWING'.
+                -> Remember that references are immutable by default!
+
+
+MUTABLE REFERENCES
+
+-> To make them mutable it is necessary to change the variable to a mutable variable and the function needs to receive a mutable parameter.
+    -> For example:
+
+        fn main() {
+            let s1 = String::from("hello");
+            change(&s1);
+        }
+
+        fn change(some_string: &String) {
+            some_string.push_str(", world");
+        }
+
+        -> The code above would be leaded to an error.
+        -> Correcting it:
+
+        fn main() {
+            let mut s1 = String::from("hello");
+            change(&mut s1);
+        }
+
+        fn change(some_string: &mut String) {
+            some_string.push_str(", world");
+        }
+
+        -> Now it will work!
+
+    -> Mutable references has one restriction:
+        -> You can have ONLY ONE mutable reference to a particular piece of data in a particular scope.
+        -> This prevents data erases at compile time, that occours when we have two pointers pointing to the same piece of data and one of those pointers is used to write to the data and there is no machanism to syncronize data access between those pointers.
+        -> If you need to have more than one reference to a piece of data, change that data to an immutable data. There can be more than one immutable reference to a particular data.
+        -> But another thing that cannot happen is having a mutable reference when a immutable reference already exists in the same scope.
+            -> For example:
+
+                fn main() {
+                    let mut s = String::from("hello");
+
+                    let r1 = &s;
+                    let r2 = &s;
+                    let r3 = &mut s;
+
+                    println!("{}, {}", r1, r2);
+                }  
+
+                -> That cannot happen! Because 'r3' is being created in the same scope of 'r1' and 'r2'.
+                -> Lets correct it:
+
+                    fn main() {
+                        let mut s = String::from("hello");
+
+                        let r1 = &s;
+                        let r2 = &s;
+
+                        println!("{}, {}", r1, r2);
+
+                        let r3 = &mut s;
+                        println!("{}", r3);
+                    }  
+
+                    -> That is correct! Because the scope of 'r1' and 'r2' ends when they are being used for the last time, that information is known by the compiler, allowing the creation of 'r3' after it.
+
+DANGLING REFERENCES
+
+-> For example:
+
+    fn main() {
+        let reference_to_nothing = dangle();
+    }
+
+    fn dangle() -> &String {
+        let s = String::from("hello");
+
+        &s
+    }
+
+    -> That leads to an error. Why?
+        -> Well, 's' is being created inside 'dangle()' function. That means that 's' can only be used inside the function and goes out of scope when is last used.
+        -> Thus '&s' points to nothing, because when the function 'dangle()' ends its execution, the data that 's' is pointing to goes out of scope, that is, becomes invalid.
+        -> 'reference_to_nothing' does not receive any value. There is no value to be borrowed!
+
+*/

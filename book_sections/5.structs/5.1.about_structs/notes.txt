@@ -1,0 +1,142 @@
+/*
+
+DEFINING AND INSTANTIATING STRUCTS
+
+- Structs in Rust have a similar idea of structs in C, they store data as other data structures, but in a more free way.
+- For example:
+    
+    struct User {
+        active: bool,         // each atribute is called a 'field'
+        username: String,
+        email: String,
+        sign_in_count: u64,
+    }
+
+- To use a struct, you need to create a variable that receives that strcut as it's value. You also need to specify the field's value.
+- For example:
+
+    fn main() {
+        let user1 = User {
+            active: true,
+            username: String::from("someusername123"),
+            email: String::from("someone@example.com"),
+            sign_in_count: 1,
+        };
+    }
+
+- To access a struct's field use dot notation:
+    -> 'user1.email'
+
+- To be able to change a field's value, you need a mutable variable linked to that struct.
+- For example:
+
+    fn main() {
+        let mut user1 = User {
+            active: true,
+            username: String::from("someusername123"),
+            email: String::from("someone@example.com"),
+            sign_in_count: 1,
+        };
+
+        user1.email = String::from("somebody@example.com");
+    }
+
+    -> Note that the entire instance must be mutable!
+
+- Structs can work as return values.
+- For example:
+
+    fn build_user(email: String, username: String) -> User {
+        User {
+            active: true,
+            username: username,
+            email: email,
+            sign_in_count: 1,
+        }
+    }
+
+- Instead of writing 'username = username', for example, you can write just 'username,':
+
+    fn build_user(email: String, username: String) -> User {
+        User {
+            active: true,
+            username,
+            email,
+            sign_in_count: 1,
+        }
+    }
+
+- Creating another instance of a struct that includes most of the values from another instance can be done like this:
+
+    fn main() {
+        // --snip--
+
+        let user2 = User {
+            active: user1.active,
+            username: user1.username,
+            email: String::from("another@example.com"),
+            sign_in_count: user1.sign_in_count,
+        };
+    }
+
+    -> But there is not the best way of doing so.
+    -> Instead do this:
+
+        fn main() {
+            // --snip--
+
+            let user2 = User {
+                email: String::from("another@example.com"),
+                ..user1
+            };
+        }
+
+        -> The 'email' variable was changed from 'user1' to 'user2', that's why 'user2' was created, to implement that change. But the rest of the values remained the same.
+        -> By using '..user1', you are saying to Rust that you want the others variables from 'user1' instance to remain the same in 'user2' instance.
+            -> '..user1' must be the last statement.
+
+    -> Note that the struct update syntax uses '=' like an assignment; this is because it moves the data, just as we saw in the “Variables and Data Interacting with Move” section.
+    -> In this example, we can no longer use 'user1' as a whole after creating 'user2' because the String in the username field of 'user1' was moved into 'user2'.
+    -> If we had given 'user2' new String values for both 'email' and 'username', and thus only used the 'active' and 'sign_in_count' values from 'user1', then 'user1' would still be valid after creating 'user2'. Both 'active' and 'sign_in_count' are types that implement the 'Copy' trait, so the behavior we discussed in the “Stack-Only Data: Copy” section would apply.
+
+
+TUPLE STRUCTS
+
+- Tuple structs are a mix of a tuple with a struct, it is declared like this:
+
+    struct Color(i32, i32, i32);
+    struct Point(i32, i32, i32);
+
+    fn main() {
+        let black = Color(0, 0, 0);
+        let origin = Point(0, 0, 0);
+    }
+
+    -> Instead of using names for the fields, it is used just its content types.
+    -> Tuple structs are useful when you want to give the whole tuple a name and make the tuple a different type from other tuples, and when naming each field as in a regular struct would be verbose or redundant.
+    -> 'black' and 'origin' values are different types because they are instances of different tuple structs.
+        -> So, for example, a function that takes a parameter  of type 'Color' will not accept a 'Point' as argument, even though both types are made up of three 'i32' values.
+    -> Tuple struct instances are similar to tuples in that you can destructure them into their individual pieces, and you can use a '.' followed by the index to access an individual value.
+
+
+UNIT-LIKE STRUCTS
+
+- Unit-like structs can be useful when you need to implement a trait on some type but don’t have any data that you want to store in the type itself.
+- They are created like so:
+
+    struct AlwaysEqual;
+
+    fn main() {
+        let subject = AlwaysEqual;
+    }
+
+    -> Imagine that later we’ll implement behavior for this type such that every instance of 'AlwaysEqual' is always equal to every instance of any other type, perhaps to have a known result for testing purposes. We wouldn’t need any data to implement that behavior!
+
+
+Obs.:
+
+- In the User struct definition in Listing 5-1, we used the owned String type rather than the &str string slice type. This is a deliberate choice because we want each instance of this struct to own all of its data and for that data to be valid for as long as the entire struct is valid.
+
+- It’s also possible for structs to store references to data owned by something else, but to do so requires the use of lifetimes.
+- Lifetimes ensure that the data referenced by a struct is valid for as long as the struct is.
+*/

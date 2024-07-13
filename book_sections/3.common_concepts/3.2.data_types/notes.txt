@@ -1,0 +1,146 @@
+/*
+
+DATA TYPES GENERAL IDEAS 
+
+- Data types can be: scalar and compound
+- Rust is a statically typed language, which means that it must know the types of all variables at compile time.
+    -> In some cases it is needed to specify a variable's type, for example when converting a variable of a certain type to another using 'parse', as followed:
+        -> 'let guess: u32 = "42".parse().expect("Not a number!");'. 'u32' needs to be specified in this case.
+
+SCALAR DATA TYPES
+
+- Scalar data types represents a single value.
+- Rust has four primary scalar data types: integers, floating-point numbers, booleans and characters.
+- Integer types:
+    -> 8-bit, i8, u8
+    -> 16-bit, i16, u16
+    -> 32-bit, i32, u32
+    -> 64-bit, i64, u64
+    -> 128-bit, i128, u128
+    -> arch, isize, usize (depends on the architecture of the computer, normally 32-bit or 64-bit)
+
+    -> Each signed variant can store numbers from -(2^(n-1)) to 2^(n-1)-1 inclusive, where 'n' is the number of bits.
+    -> So an 'i8' can store numbers from -(2^7) to 2^7-1, which equals -128 to 127.
+    -> Unsigned variants can store numbers from 0 to 2^n-1, so a 'u8' can store numbers from 0 to 2^8-1, which equals 0 to 255.
+        -> If you try to store a number bigger than 255 in a variable of type 'u8', you'll get an error. That is called 'Integer Overflow'.
+    -> You can write integer literals in any of these forms:
+        -> Decimal, 98_222
+        -> Hex, 0xff
+        -> Octal, 0o77
+        -> Binary, 0b1111_0000
+        -> Byte (u8 only), b'A'
+
+- Floating-point types:
+    -> 32-bit, f32
+    -> 64-bit, f64
+    -> They're all signed numbers, there is no unsigned floating-point.
+    -> The standard is the 'f64', because it has roughly the same speed as 'f32' but is capable of more precision.
+    -> Floating-point numbers are represented according to the IEEE-754 standard.
+    -> The 'f32' type is a single-precision float and 'f64' has double precision.
+
+- Boolean type:
+    -> They're one byte in size and specified using 'bool'.
+    -> Can be 'true' or 'false'.
+
+- Character type:
+    -> They're specified using the word 'char' and/or with single quotes ('').
+    -> They have four bytes in size and represents a Unicode Scalar Value (more than just ASCII)
+
+
+COMPOUND DATA TYPES
+
+- Compound types can group multiple values into one type.
+- Rust has two primitive compound types:
+    -> Tuples and arrays.
+
+- Tuple type:
+    -> It is a general way of grouping together a number of values with different types into one compound type.
+    -> Tuples have a fixed length: once declared, they cannot grow or shrink in size.
+    -> You can create a tuple by writing a comma-separated list of values inside parentheses.
+    -> For example:
+
+        fn main() {
+            let tup: (i32, f64, u8) = (500, 6.4, 1);
+        }
+
+    -> You can access the values inside the tuple by doing what's called 'destructuring':
+
+        fn main() {
+            let tup = (500, 6.4, 1);
+
+            let (x, y, z) = tup; // this is called 'destructuring'
+
+            println!("The value of y is: {y}");
+        }
+
+    -> You can also access a tuple element directly by using a period ('dot notation'). followed by the index of the value we want to access.
+    -> For example:
+
+        fn main() {
+            let x: (i32, f64, u8) = (500, 6.4, 1);
+
+            let five_hundred = x.0;
+
+            let six_point_four = x.1;
+
+            let one = x.2;
+        }
+    
+    -> A tuple without any value has a special name, is called: 'unit'.
+    -> This value and its corresponding type are both written '()' and represents an empty value or an empty return type.
+    -> Expressions implicity return the 'unit' value if they don't return any other value.
+
+- Array type:
+    -> They have fixed length and every element of an array must have the same type.
+    -> For example:
+        
+        fn main() {
+            let a = [1, 2, 3, 4, 5];
+        }
+    
+    -> Arrays are useful when you want your data allocated on the stack rather than the heap, or when you want to ensure you always have a fixed number of elements.
+    -> There is a difference between an 'array' and a 'vector':
+        -> A vector it is like an array but it can grow or shrink in size. It is provided by the standard library.
+    
+    -> Declaration of an array type and size:
+        -> 'let a: [i32; 5] = [1, 2, 3, 4, 5];', where 'i32' is the type of it's elements and '5' the number of elements.
+        -> 'let a = [3; 5];'. This is a type of initialization of an array that will contain the value of '[3,3,3,3,3]'.
+    
+    -> To access the elements of an array, you can write like this:
+
+        fn main() {
+            let a = [1, 2, 3, 4, 5];
+
+            let first = a[0]; // starts at index 0
+            let second = a[1];
+        }
+
+    -> There is a common error ('index out of bounds' exception). It means that the user or the code tried to access an array's index that doesn't exist.
+    -> For example:
+
+        fn main() {
+            let a = [1, 2, 3, 4, 5];
+
+            println!("Please enter an array index: ");
+
+            let mut index = String::new();
+
+            io::stdin()
+                .read_line(&mut index)
+                .expect("Failed to read line!");
+
+            let index: usize = index
+                .trim()
+                .parse()
+                .expect("Index entered was not a number!");
+            
+            let element = a[index];
+
+            println!("The value of the element at index {index} is: {element}");
+        }
+
+        - If the user enteder with the number '10', for example, as an input to the 'index' variable, the program will encounter that error, beacause the array has only '5' elements, it doesn't have the indexes '6', '7', '8', '9', '10' and so on. 
+
+        - The program will result in a runtime error at the point of using an invalid value in the indexing operation.
+        - This is an example of Rust’s memory safety principles in action. In many low-level languages, this kind of check is not done.
+*/

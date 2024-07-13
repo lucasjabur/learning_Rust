@@ -1,0 +1,168 @@
+/*
+
+AN EXAMPLE PROGRAM USING STRUCTS
+
+- Different ways of solving the same problem:
+
+
+1. Using variables:
+
+    fn main() {
+        let width1 = 30;
+        let height1 = 50;
+
+        println!(
+            "The area of the rectangle is {} square pixels.",
+            area(width1, height1)
+        );
+    }
+
+    fn area(width: u32, height: u32) -> u32 {
+        width * height
+    }
+
+    -> Not good!
+    -> The area function is supposed to calculate the area of one rectangle, but the function we wrote has two parameters, and it’s not clear anywhere in our program that the parameters are related. It would be more readable and more manageable to group width and height together.
+
+
+2. Using tuples:
+
+    fn main() {
+        let rect1 = (30, 50);
+
+        println!(
+            "The area of the rectangle is {} square pixels.",
+            area(rect1)
+        );
+    }
+
+    fn area(dimensions: (u32, u32)) -> u32 {
+        dimensions.0 * dimensions.1
+    }
+
+    -> Still not good enough!
+    -> This version is less clear: tuples don’t name their elements, so we have to index into the parts of the tuple, making our calculation less obvious.
+    -> Mixing up the width and height wouldn’t matter for the area calculation, but if we want to draw the rectangle on the screen, it would matter!
+    -> We would have to keep in mind that width is the tuple index 0 and height is the tuple index 1. This would be even harder for someone else to figure out and keep in mind if they were to use our code.
+
+
+3. Using a struct:
+
+    struct Rectangle {
+        width: u32,
+        height: u32,
+    }
+
+    fn main() {
+        let rect1 = Rectangle {
+            width: 30,
+            height: 50,
+        };
+
+        println!(
+            "The area of the rectangle is {} square pixels.",
+            area(&rect1)
+        );
+    }
+
+    fn area(rectangle: &Rectangle) -> u32 {
+        rectangle.width * rectangle.height
+    }
+
+    -> Way better!
+
+
+ADDING USEFUL FUNCTIONALITY WITH DERIVED TRAITS
+
+- Problem: I want to print my struct and its fields. But how?
+
+1. Error:
+
+    struct Rectangle {
+        width: u32,
+        height: u32,
+    }
+
+    fn main() {
+        let rect1 = Rectangle {
+            width: 30,
+            height: 50,
+        };
+
+        println!("rect1 is {}", rect1);
+    }
+
+    -> This does not work. 'println!' macro cannot do the job!
+    -> The println! macro can do many kinds of formatting, and by default, the curly brackets tell println! to use formatting known as Display: output intended for direct end user consumption, and that's not the case.
+    -> It works, obviouslly for primitive type's variables, for example.
+
+2. Error:
+
+    struct Rectangle {
+        width: u32,
+        height: u32,
+    }
+
+    fn main() {
+        let rect1 = Rectangle {
+            width: 30,
+            height: 50,
+        };
+
+        println!("rect1 is {:?}", rect1);
+    }
+
+    -> This does not work either. But it should work, shoudn't it?
+    -> Actually, kinda...
+    -> The 'println!' macro call will now look like 'println!("rect1 is {:?}", rect1);'. Putting the specifier ':?' inside the curly brackets tells 'println!' we want to use an output format called 'Debug'.
+    -> The Debug trait enables us to print our struct in a way that is useful for developers so we can see its value while we’re debugging our code.
+    -> The problem is that we have to explicitly opt in to make that functionality available for our struct.
+    -> To do that, we add the outer attribute '#[derive(Debug)]' just before the struct definition:
+
+3. Success!
+
+    #[derive(Debug)]
+    struct Rectangle {
+        width: u32,
+        height: u32,
+    }
+
+    fn main() {
+        let rect1 = Rectangle {
+            width: 30,
+            height: 50,
+        };
+
+        println!("rect1 is {:#?}", rect1);
+    }
+
+    -> Changing from ':?' to ':#?' makes the output looks prettier.
+
+
+4. Another good choice:
+
+    #[derive(Debug)]
+    struct Rectangle {
+        width: u32,
+        height: u32,
+    }
+
+    fn main() {
+        let scale = 2;
+        let rect1 = Rectangle {
+            width: dbg!(30 * scale),
+            height: 50,
+        };
+
+        dbg!(&rect1);
+    }
+
+    -> Another way to print out a value using the Debug format is to use the dbg! macro, which takes ownership of an expression (as opposed to println!, which takes a reference), prints the file and line number of where that dbg! macro call occurs in your code along with the resultant value of that expression, and returns ownership of the value.
+    -> **Obs.: Calling the dbg! macro prints to the standard error console stream (stderr), as opposed to println!, which prints to the standard output console stream (stdout).
+    
+    -> We can put dbg! around the expression 30 * scale and, because dbg! returns ownership of the expression’s value, the width field will get the same value as if we didn’t have the dbg! call there.
+    -> We don’t want dbg! to take ownership of rect1, so we use a reference to rect1 in the next call.
+
+    
+
+*/

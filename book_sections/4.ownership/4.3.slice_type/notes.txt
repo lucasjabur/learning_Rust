@@ -1,0 +1,148 @@
+/*
+
+SLICE TYPE
+
+- Slices let you reference a contiguous sequence of elements in a collection (like vectors, strings and hash maps) rather than the whole collection. Does not have ownership because it is a kind of reference.
+
+- Imagine we have a function called 'first_word(s: &String)' that returns the first word of that String. What would be the return value?
+- We don't have a way to return a part of the String, but maybe we can return an index to the end of the first word:
+    -> For example:
+
+        fn first_word(s: &String) -> usize {
+            let bytes = s.as_bytes();
+
+            for (i, &item) in bytes.iter().enumerate() {
+                if item = b' ' {
+                    return i;
+                }
+            }
+
+            s.len()
+        }
+
+        -> Here we are returning an index to the end of the word.
+        -> What we do is take the String and convet it to an array of bytes using the method 'as_bytes()'.
+        -> Then we use a for() loop. Here we take the bytes, call the iterator function 'iter()' and then call the 'enumerate()' function so we can get the index of each item and the item itself (a reference to it actually).
+        -> Then for every item we check if it is equals to 'b' '', which signifies the end of an word, and if that's true we return that index.
+        -> If we go through the entire String without having spaces, then 's.len()' (that represents the length of the String itself) is being returned, because in this case the String represents only one word.
+
+        -> There is two problems with this implementation:
+            -> The first is that the return value is not tied to the String. To understand it, look at the code below:
+
+                fn main() {
+                    let mut s = String::from("hello world");
+                    let word = first_word(&s);
+                    s.clear(); 
+                }
+
+                fn first_word(s: &String) -> usize {
+                    let bytes = s.as_bytes();
+
+                    for (i, &item) in bytes.iter().enumerate() {
+                        if item = b' ' {
+                            return i;
+                        }
+                    }
+
+                    s.len()
+                }
+
+                -> Inside the main function, after the call 's.clear()', the variable 'word' becomes invalid because 'word' equals '5' (that represents 'hello ', the first word until the first space). But after calling 's.clear()' the String is now empty, but 'word' is still '5', that means that 'word' is not guarding the right size of the String 's'. In conclusion, 'word' is not tied to the String.
+                -> But trying to keep the variable in sync with the String manually is error prone and unnecessary.
+                
+                -> Now imagine if instead of the first word, we'd like to return the second word of the String, the implementation would change. In this case we would want to return a tuple with two values, an index to the start of the word and an index to the end of the word, and now we have more values to keep in sync with the String.
+
+                -> To get around with this issues, we have to use the 'string slice' (&str)!
+                -> For example:
+
+                    fn main() {
+                        let mut s = String::from("hello world");
+
+                        let hello = &s[0..5]; // reference to the content that's inside the range of indexes 0 to 5, being 5 exclusive (that means, 0 to 4)
+                        let world = &s[6..11]; // reference to the content that's inside the range of indexes 6 to 11 (6 to 10)
+
+                        let word = first_word(&s);
+                        s.clear(); 
+                    }
+
+                    fn first_word(s: &String) -> usize {
+                        let bytes = s.as_bytes();
+
+                        for (i, &item) in bytes.iter().enumerate() {
+                            if item = b' ' {
+                                return i;
+                            }
+                        }
+
+                        s.len()
+                    }
+
+                    -> There are different ways of writing the same stuff:
+                        -> 'let hello = &s[0..5];' ==>  'let hello = &s[..5];'
+                        -> 'let world = &s[6..11];' ==> 'let world = &s[6..];' (just because represents the last word!)
+                    -> More info:
+                        -> 'let whole_word = &s[..];'
+
+                    -> Now, lets adapt the 'first_word()' function to the use of 'string slices' (&str):
+
+                    fn main() {
+                        let mut s = String::from("hello world");
+
+                        let hello = &s[0..5]; // reference to the content that's inside the range of indexes 0 to 5, being 5 exclusive (that means, 0 to 4)
+                        let world = &s[6..11]; // reference to the content that's inside the range of indexes 6 to 11 (6 to 10)
+
+                        let word = first_word(&s);
+                        s.clear(); 
+                        println!("The first word is: {}", word); // now our 'word' variable is a string slice, which is tied to the String itself, that way it can be printed after it being cleared.
+                    }
+
+                    fn first_word(s: &String) -> &str {
+                        let bytes = s.as_bytes(); 
+
+                        for (i, &item) in bytes.iter().enumerate() {
+                            if item = b' ' {
+                                return &s[0..i]; // returning a string slice from the beggining of the word to the index where the space was found
+                            }
+                        }
+
+                        &s[..] // string slice to the entire String
+                    }
+
+                    -> But there is one problem still!
+                        -> 'let word = first_word(&s);' this represents a immutable reference to the String
+                        -> 's.clear()' needs a mutable reference to the String (because 'clear()' it's going to change the String value)
+                        -> 'println!("The first word is: {}", word);' needs a immutable reference to the String to print it out
+
+                        -> The problem is: WE CANNOT HAVE A MUTABLE REFERENCE AND A IMMUTABLE REFERENCE TO THE SAME DATA IN THE SAME SCOPE!
+
+                    -> To solve that, lets change one more time the code:
+
+                        fn main() {
+                            let mut s = String::from("hello world");
+                            let s2 = "hello world"; 
+                            
+                            // this is a string literal, and string literals are actually string slices (&str) because string literals are directly stored at the binary, so this string slice points to that specific location at the binary 
+
+                            let word = first_word(s2);
+
+                        }
+
+                        fn first_word(s: &str) -> &str {
+                            let bytes = s.as_bytes(); 
+
+                            for (i, &item) in bytes.iter().enumerate() {
+                                if item = b' ' {
+                                    return &s[0..i]; // returning a string slice from the beggining of the word to the index where the space was found
+                                }
+                            }
+
+                            &s[..] // string slice to the entire String
+                        }
+
+                        -> We can use string slices with String and also with string literals, that's why the code above still works!
+
+- Slices does not exist just for strings, it also exists for numbers, for example:
+    -> 'let a = [1, 2, 3, 4, 5];'
+    -> 'let slice = &a[0..2];' ==> that is equal to the first TWO numbers the array 'a'.
+
+*/

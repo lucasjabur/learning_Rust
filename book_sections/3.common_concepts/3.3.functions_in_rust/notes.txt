@@ -1,0 +1,70 @@
+/*
+
+FUNCTIONS IN RUST:
+
+- Functions and variables name convention: snake case (lowercase letters and underscore to separate words).
+- Rust doesn’t care where you define your functions, only that they’re defined somewhere in a scope that can be seen by the caller.
+
+
+PARAMETERS
+
+- Variables defined inside a function. They work in the scope of that function.
+- Parameter vs argument: 
+    -> Parameter is the variable itself
+    -> Argument is the value that variable receives when the function is called.
+- In function signatures, you must declare the type of each parameter.
+
+
+STATEMENTS AND EXPRESSIONS
+
+- Statements vs expressions:
+    -> Statements are instructions that perform some action and do not return a value.
+    -> Expressions evaluate to a resultant value. Let’s look at some examples.
+
+- Statements do not return values. Therefore, you can’t assign a let statement to another variable, as the following code tries to do; you’ll get an error:
+    -> For example: 
+    
+        fn main() {
+            let x = (let y = 6);
+        }
+    
+- Expressions can be part of statements: the '6' in the statement 'let y = 6;' is an expression that evaluates to the value '6'.
+    -> Calling a function is an expression. Calling a macro is an expression. A new scope block created with curly brackets is an expression.
+    -> For example:
+
+        fn main() {
+            let y = {    --|
+                let x = 3; |-> this can be done in Rust
+                x + 1    --|
+            };
+
+            println!("The value of y is: {y}");
+        }
+- Expressions DO NOT include ending semicolons. If you add a semicolon to the end of an expression, you turn it into a statement, and it will then not return a value.
+    -> Keep this in mind as you explore function return values and expressions next.
+
+
+FUNCTIONS WITH RETURN values
+
+- Functions can return values. The type of the return is indicated by an "arrow", like this '->' afeter the declaration of the function.
+    -> For example:
+
+        fn five() -> i32 {
+            5
+        }
+
+        fn main() {
+            let x = five();
+
+            println!("The value of x is: {x}");
+        }
+    
+    -> In Rust, the return value of the function is synonymous with the value of the final expression in the block of the body of a function.
+    -> You can return early from a function by using the return keyword and specifying a value, but most functions return the last expression implicitly.
+    -> In the case above, '5' is the final expression, so that will be the return value. That way, the variable 'x' of function 'main()' will have '5' as its value.
+    -> ATENTION: the body of the function is a lonely '5' with NO SEMICOLON because it’s an EXPRESSION whose value we want to return.
+
+    
+
+
+*/

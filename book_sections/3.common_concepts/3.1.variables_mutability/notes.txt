@@ -1,0 +1,52 @@
+/*
+
+VARIABLES
+
+- Variables in Rust are immutable.
+    -> Advantages: more secure and easy concurrency Rust offers.
+
+- You can make a variable mutable by writing: let mut x = 5:
+    -> Using the command 'mut' you can now update the value of 'x': x = 6.
+
+
+CONSTANTS
+
+- Constants are also immutable, but there are some differences between them and variables:
+    -> You cannot use 'mut' with constants, they are always immutable.
+    -> The last difference is that constants may be set only to a constant expression, not the result of a value that could only be computed at runtime.
+        -> For example, you cannot set a constant to a return value of a fuction or any value that is computed at run time.
+    -> Constant variables need to have a type declared.
+        -> For example: 'const LINKEDIN_FOLLOWERS: u32 = 10_000'. 'u32' needs to be put.
+            -> Also you can use underscore to make numeric literals more readable.
+
+- Example: 'const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3':
+    -> Naming convention: uppercase and underscore between words.
+    -> OBS.: The compiler is able to evaluate a limited set of operations at compile time, which lets us choose to write out this value in a way that’s easier to understand and verify, rather than setting this constant to the value 10,800.
+
+
+SHADOWING 
+
+- Declaring a new variable using the name of a previous declared variable:
+    -> fn main() {
+          let x = 5;
+
+          let x = x + 1;
+
+          {
+              let x = x * 2;
+              println!("The value of x in the inner scope is: {x}");
+          }
+
+              println!("The value of x is: {x}");
+      }
+      
+    -> The variable 'x' was declared with the value '5'. Then, it was shadowed by the second variable 'x' with the value of 'x + 1'. The second 'x' is equals to '6'.
+    -> Then a new scope is created, so inside the curly brackets the 'x' variable is 'x * 2', what gives the value of '12' to the 'x' variable. Another usage of shadowing.
+    -> Inside the curly brackets scope, 'x' is equals to '12'. Outside of it 'x' is equals to '6'.
+
+    -> Shadowing is different from marking a variable as 'mut' because we’ll get a compile->time error if we accidentally try to reassign to this variable without using the 'let' keyword. By using 'let', we can perform a few transformations on a value but have the variable be immutable after those transformations have been completed.
+    -> The other difference between 'mut' and shadowing is that because we’re effectively creating a new variable when we use the 'let' keyword again, we can change the type of the value but reuse the same name.
+    -> So, we can change the variable's value when it is a mutable variable, but we cannot change it's type. With shadowing we can change not just it's value, but also it's type.
+
+
+*/
