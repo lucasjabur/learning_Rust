@@ -1,0 +1,32 @@
+/*
+
+- Cargo is used as a tool to manage Rust projects.
+- It handles a lot os tasks, such as building your code, downloading the libraries your code depends on (dependencies), and building those libraries.
+- To create a new project using Cargo, you need to type: cargo new <name_project_folder>. For exemplo, 'cargo new hello_cargo'.
+- It produces two files and one directory: 'Cargo.toml' and 'main.rs' inside the directory 'src'. It also initializes a new Git repository along with a .gitignore file.
+    -> To create a project using Cargo without the Git initialization, use 'cargo new --vcs=git'.
+    -> The Git repository will not be initialized if you run 'cargo new' within an existing Git repository.
+
+- The file Cargo.toml is in the TOML (Tom’s Obvious, Minimal Language) format, which is Cargo's configuration format.
+- The first line, '[package]', is a section heading that indicates that the following statements are configuring a package. As we add more information to this file, we'll add other sections.
+- The next three lines set the configuration information Cargo needs to compile your program: the name, the version, and the edition of Rust to use (more about 'edition' key in Appendix E).
+- The last line, '[dependencies]', is the start of a section for you to list any of your project's dependencies. In Rust, packages of code are referred to as 'crates'.
+
+- To build a Cargo project, you need to type: 'cargo build'.
+- To run the main code, you need to type: './target/debug/<name_executable>'.
+- A new file, called 'Cargo.lock', is also created. This file keeps track of the exact versions of dependencies in your project.
+- You can build and run the executable with one command: 'cargo run'.
+- You can check if your code can be compiled without creating an executable typing: 'cargo check'.
+- These commands are the same no matter what operational system is being used.
+
+- Summary:
+    -> We can create a project using cargo new.
+    -> We can build a project using cargo build.
+    -> We can build and run a project in one step using cargo run.
+    -> We can build a project without producing a binary to check for errors using cargo check.
+    -> Instead of saving the result of the build in the same directory as our code, Cargo stores it in the target/debug directory.
+
+- When the project is done to be released, you can run: 'cargo build --release'. It put the executable inside another directory such as the simple command 'cargo build', but instead of putting it in 'target/debug', it is put in 'target/release'.
+    -> Obs.: It is important to notice that 'cargo build --release' takes longer, because of optimizations that are implemented to make your Rust code run faster.
+
+*/
