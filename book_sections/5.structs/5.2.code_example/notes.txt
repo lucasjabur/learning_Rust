@@ -141,7 +141,7 @@ ADDING USEFUL FUNCTIONALITY WITH DERIVED TRAITS
 
 4. Another good choice:
 
-    #[derive(Debug)]
+    #[derive(Debug)]                            // '#[derive(Debug)]' tells the compiler to provide a basic implementation of the 'Debug' trait
     struct Rectangle {
         width: u32,
         height: u32,
